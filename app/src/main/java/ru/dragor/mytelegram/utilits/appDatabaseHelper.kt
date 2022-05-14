@@ -1,11 +1,14 @@
 package ru.dragor.mytelegram.utilits
 
+import android.annotation.SuppressLint
 import android.net.Uri
+import android.provider.ContactsContract
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import ru.dragor.mytelegram.models.CommonModel
 import ru.dragor.mytelegram.models.User
 
 lateinit var AUTH: FirebaseAuth
@@ -67,8 +70,31 @@ inline fun initUser(crossinline function: () -> Unit) {
         })
 }
 
- fun initContacts() {
+@SuppressLint("Range")
+fun initContacts() {
     if (checkPermission(READ_CONTACTS)) {
-//var arrayContacts = arrayListOf<>()
+        var arrayContacts = arrayListOf<CommonModel>()
+        var cursor = APP_ACTIVITY.contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            null,
+            null,
+            null,
+            null
+        )
+        cursor?.let { it ->
+            while (cursor.moveToNext()) {
+                val fullName =
+                    it.getString(it.getColumnIndex
+                        (ContactsContract.Contacts.DISPLAY_NAME))
+                val phone =
+                    it.getString(it.getColumnIndex
+                        (ContactsContract.CommonDataKinds.Phone.NUMBER))
+                val newModel = CommonModel()
+                newModel.fullname = fullName
+                newModel.phone = phone.replace(Regex("[\\s,-]"), "")
+                arrayContacts.add(newModel)
+            }
+        }
+        cursor?.close()
     }
 }
