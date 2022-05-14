@@ -12,7 +12,7 @@ lateinit var AUTH: FirebaseAuth
 lateinit var CURRENT_UID: String
 lateinit var REF_DATABASE_ROOT: DatabaseReference
 lateinit var USER: User
-lateinit var REF_STORAGE_ROOT:StorageReference
+lateinit var REF_STORAGE_ROOT: StorageReference
 
 const val NODE_USERS = "users"
 const val NODE_USERNAMES = "usernames"
@@ -35,7 +35,8 @@ fun initFirebase() {
     REF_STORAGE_ROOT = FirebaseStorage.getInstance().reference
 
 }
- inline fun putUrlToDatabase(url: String, crossinline function: () -> Unit) {
+
+inline fun putUrlToDatabase(url: String, crossinline function: () -> Unit) {
     REF_DATABASE_ROOT.child(NODE_USERS).child(CURRENT_UID)
         .child(CHILD_PHOTO_URL).setValue(url)
         .addOnSuccessListener { function() }
@@ -53,12 +54,13 @@ inline fun putImageToStorage(uri: Uri, path: StorageReference, crossinline funct
         .addOnSuccessListener { function() }
         .addOnFailureListener { showToast(it.message.toString()) }
 }
+
 inline fun initUser(crossinline function: () -> Unit) {
     REF_DATABASE_ROOT.child(NODE_USERS).child(CURRENT_UID)
         .addListenerForSingleValueEvent(AppValueEventListener {
             USER = it.getValue(ru.dragor.mytelegram.models.User::class.java)
                 ?: ru.dragor.mytelegram.models.User()
-            if (USER.username.isEmpty()){
+            if (USER.username.isEmpty()) {
                 USER.username = CURRENT_UID
             }
             function()
