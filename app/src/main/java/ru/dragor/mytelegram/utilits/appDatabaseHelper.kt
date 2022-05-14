@@ -66,3 +66,9 @@ inline fun initUser(crossinline function: () -> Unit) {
             function()
         })
 }
+
+ fun initContacts() {
+    if (checkPermission(READ_CONTACTS)) {
+//var arrayContacts = arrayListOf<>()
+    }
+}
