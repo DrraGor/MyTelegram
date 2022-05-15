@@ -19,7 +19,8 @@ lateinit var REF_STORAGE_ROOT: StorageReference
 
 const val NODE_USERS = "users"
 const val NODE_USERNAMES = "usernames"
-
+const val NODE_PHONES = "phones"
+const val NODE_PHONES_CONTACTS = "phones_contacts"
 const val FOLDER_PROFILE_IMAGE = "profile_image"
 
 const val CHILD_ID = "id"
@@ -61,8 +62,8 @@ inline fun putImageToStorage(uri: Uri, path: StorageReference, crossinline funct
 inline fun initUser(crossinline function: () -> Unit) {
     REF_DATABASE_ROOT.child(NODE_USERS).child(CURRENT_UID)
         .addListenerForSingleValueEvent(AppValueEventListener {
-            USER = it.getValue(ru.dragor.mytelegram.models.User::class.java)
-                ?: ru.dragor.mytelegram.models.User()
+            USER = it.getValue(User::class.java)
+                ?: User()
             if (USER.username.isEmpty()) {
                 USER.username = CURRENT_UID
             }
@@ -73,8 +74,8 @@ inline fun initUser(crossinline function: () -> Unit) {
 @SuppressLint("Range")
 fun initContacts() {
     if (checkPermission(READ_CONTACTS)) {
-        var arrayContacts = arrayListOf<CommonModel>()
-        var cursor = APP_ACTIVITY.contentResolver.query(
+        val arrayContacts = arrayListOf<CommonModel>()
+        val cursor = APP_ACTIVITY.contentResolver.query(
             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
             null,
             null,
@@ -96,5 +97,21 @@ fun initContacts() {
             }
         }
         cursor?.close()
+        updatePhonesToDatabase(arrayContacts)
     }
+}
+
+fun updatePhonesToDatabase(arrayContacts: ArrayList<CommonModel>) {
+    REF_DATABASE_ROOT.child(NODE_PHONES).addListenerForSingleValueEvent(AppValueEventListener{
+        it.children.forEach{snapshot ->
+            arrayContacts.forEach {contact ->
+              if (snapshot.key == contact.phone)
+                  REF_DATABASE_ROOT.child(NODE_PHONES_CONTACTS).child(CURRENT_UID)
+                      .child(snapshot.value.toString()).child(CHILD_ID)
+                      .setValue(snapshot.value.toString())
+                      .addOnFailureListener { showToast(it.message.toString()) }
+            }
+        }
+    })
+
 }
