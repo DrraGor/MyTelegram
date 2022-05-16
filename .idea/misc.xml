@@ -9,11 +9,13 @@
         <entry key="..\:/Work/MyTelegram/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
         <entry key="..\:/Work/MyTelegram/app/src/main/res/layout/activity_main.xml" value="0.18" />
         <entry key="..\:/Work/MyTelegram/app/src/main/res/layout/activity_register.xml" value="0.33" />
+        <entry key="..\:/Work/MyTelegram/app/src/main/res/layout/contact_item.xml" value="0.1" />
         <entry key="..\:/Work/MyTelegram/app/src/main/res/layout/content_register.xml" value="0.25" />
         <entry key="..\:/Work/MyTelegram/app/src/main/res/layout/fragment_change_bio.xml" value="0.15833333333333333" />
         <entry key="..\:/Work/MyTelegram/app/src/main/res/layout/fragment_change_name.xml" value="0.1" />
         <entry key="..\:/Work/MyTelegram/app/src/main/res/layout/fragment_change_username.xml" value="0.1" />
         <entry key="..\:/Work/MyTelegram/app/src/main/res/layout/fragment_chats.xml" value="0.1148036253776435" />
+        <entry key="..\:/Work/MyTelegram/app/src/main/res/layout/fragment_contacts.xml" value="0.22037037037037038" />
         <entry key="..\:/Work/MyTelegram/app/src/main/res/layout/fragment_enter_code.xml" value="0.44377510040160645" />
         <entry key="..\:/Work/MyTelegram/app/src/main/res/layout/fragment_enter_phone_number.xml" value="0.25" />
         <entry key="..\:/Work/MyTelegram/app/src/main/res/layout/fragment_first.xml" value="0.22708333333333333" />
