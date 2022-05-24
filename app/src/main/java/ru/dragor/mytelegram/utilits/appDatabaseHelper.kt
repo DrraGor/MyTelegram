@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.provider.ContactsContract
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -32,6 +33,7 @@ const val CHILD_PHOTO_URL = "photoUrl"
 const val CHILD_STATE = "state"
 
 fun initFirebase() {
+    /* Инициализация базы данных Firebase */
     AUTH = FirebaseAuth.getInstance()
     REF_DATABASE_ROOT = FirebaseDatabase.getInstance().reference
     USER = User()
@@ -39,26 +41,26 @@ fun initFirebase() {
     REF_STORAGE_ROOT = FirebaseStorage.getInstance().reference
 
 }
-
+/* Функция высшего порядка, отпраляет полученый URL в базу данных */
 inline fun putUrlToDatabase(url: String, crossinline function: () -> Unit) {
     REF_DATABASE_ROOT.child(NODE_USERS).child(CURRENT_UID)
         .child(CHILD_PHOTO_URL).setValue(url)
         .addOnSuccessListener { function() }
         .addOnFailureListener { showToast(it.message.toString()) }
 }
-
+/* Функция высшего порядка, получает  URL картинки из хранилища */
 inline fun getUrlFromStorage(path: StorageReference, crossinline function: (url: String) -> Unit) {
     path.downloadUrl
         .addOnSuccessListener { function(it.toString()) }
         .addOnFailureListener { showToast(it.message.toString()) }
 }
-
+/* Функция высшего порядка, отправляет картинку в хранилище */
 inline fun putImageToStorage(uri: Uri, path: StorageReference, crossinline function: () -> Unit) {
     path.putFile(uri)
         .addOnSuccessListener { function() }
         .addOnFailureListener { showToast(it.message.toString()) }
 }
-
+/* Функция высшего порядка, инициализация текущей модели USER */
 inline fun initUser(crossinline function: () -> Unit) {
     REF_DATABASE_ROOT.child(NODE_USERS).child(CURRENT_UID)
         .addListenerForSingleValueEvent(AppValueEventListener {
@@ -100,18 +102,26 @@ fun initContacts() {
         updatePhonesToDatabase(arrayContacts)
     }
 }
-
+// Функция добавляет номер телефона с id в базу данных.
 fun updatePhonesToDatabase(arrayContacts: ArrayList<CommonModel>) {
-    REF_DATABASE_ROOT.child(NODE_PHONES).addListenerForSingleValueEvent(AppValueEventListener{
-        it.children.forEach{snapshot ->
-            arrayContacts.forEach {contact ->
+    REF_DATABASE_ROOT.child(NODE_PHONES).addListenerForSingleValueEvent(
+        AppValueEventListener{
+        it.children.forEach{ snapshot ->
+            arrayContacts.forEach { contact ->
               if (snapshot.key == contact.phone)
-                  REF_DATABASE_ROOT.child(NODE_PHONES_CONTACTS).child(CURRENT_UID)
-                      .child(snapshot.value.toString()).child(CHILD_ID)
+                  REF_DATABASE_ROOT.child(
+                      NODE_PHONES_CONTACTS
+                  ).child(CURRENT_UID)
+                      .child(snapshot.value.toString())
+                      .child(CHILD_ID)
                       .setValue(snapshot.value.toString())
-                      .addOnFailureListener { showToast(it.message.toString()) }
+                      .addOnFailureListener { showToast(
+                          it.message.toString()) }
             }
         }
     })
 
 }
+// Функция преобразовывает полученые данные из Firebase в модель CommonModel
+fun DataSnapshot.getCommonModel(): CommonModel
+        = this.getValue(CommonModel::class.java) ?: CommonModel()
